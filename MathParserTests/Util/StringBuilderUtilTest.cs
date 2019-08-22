@@ -10,7 +10,7 @@ namespace MathParserTests
     public class StringBuilderUtilTest
     {
         [TestMethod]
-        public void Range_NonChunky_ReturnsCorrectCharacters()
+        public void Range_NonChunky_ReturnsCorrectCharactersForRange()
         {
             //set up
             var builder = new StringBuilder("01234567");
@@ -133,6 +133,17 @@ namespace MathParserTests
 
             //test
             Assert.ThrowsException<ArgumentException>(() => stringBuilder.Move(new StringBuilder(), startIndex, length));
+        }
+
+        [TestMethod]
+        public void Move_OutOfBoundsRangeWithLargeCapacity_ThrowsIndexOutOfRangeException()
+        {
+            //set up
+            var stringBuilder = new StringBuilder(20);
+            stringBuilder.Append("foo");
+
+            //test
+            Assert.ThrowsException<IndexOutOfRangeException>(() => stringBuilder.Move(new StringBuilder(), 0, 10));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathParser.Util;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -55,6 +56,14 @@ namespace MathParser.Lexer
                 return source.Current;
 
             return null;
+        }
+
+        private void RollBack(StringBuilder content, int newLength)
+        {
+            foreach ((var chunk, int i) in content.Range(0, newLength))
+                toProcess.Enqueue(chunk.Span[i]);
+
+            content.Remove(0, newLength);
         }
 
         public bool MoveNext()
