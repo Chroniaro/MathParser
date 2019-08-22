@@ -37,9 +37,18 @@ namespace MathParser.Util
         public static StringBuilder Move(this StringBuilder from, StringBuilder to, int startIndex, int length)
         {
             if (length < 0)
-                throw new ArgumentException("Length cannot be negative (recieved " + length + ")");
+                throw new ArgumentException("Length cannot be negative");
 
+            if (startIndex < 0)
+                throw new IndexOutOfRangeException("Starting index cannot be negative");
 
+            if (startIndex + length > from.Length)
+                throw new IndexOutOfRangeException("Range extends beyond end of StringBuilder");
+
+            foreach ((var chunk, int i) in from.Range(startIndex, length))
+                to.Append(chunk.Span[i]);
+
+            from.Remove(startIndex, length);
 
             return to;
         }
