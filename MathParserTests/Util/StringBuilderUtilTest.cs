@@ -9,6 +9,39 @@ namespace MathParserTests
     [TestClass]
     public class StringBuilderUtilTest
     {
+        [TestMethod]
+        public void Range_NonChunky_ReturnsCorrectCharacters()
+        {
+            //set up
+            var builder = new StringBuilder("01234567");
+
+            //test
+            int index = 2;
+            foreach ((var chunk, int i) in builder.Range(2, 3))
+            {
+                Assert.AreEqual(index.ToString()[0], chunk.Span[i]);
+                ++index;
+            }
+            Assert.AreEqual(5, index);
+        }
+
+        [TestMethod]
+        public void Range_Chunky_ReturnsCorrectCharacters()
+        {
+            //set up
+            var builder = new StringBuilder(0);
+            for (int i = 0; i < 20; ++i)
+                builder.Append("foo");
+
+            var rangeEnumerator = builder.Range(6, 1).GetEnumerator();
+
+            //test
+            Assert.IsTrue(rangeEnumerator.MoveNext());
+            (var chunk, int index) = rangeEnumerator.Current;
+            Assert.AreEqual('f', chunk.Span[index]);
+            Assert.IsFalse(rangeEnumerator.MoveNext());
+        }
+
         private void TestMove(string initial, int startIndex, int length, string final, string moved)
         {
             //set up
@@ -19,7 +52,7 @@ namespace MathParserTests
 
             //test
             Assert.AreEqual(final, builder.ToString());
-            Assert.AreEqual(moved, movedActual);
+            Assert.AreEqual(moved, movedActual.ToString());
         }
 
         [TestMethod]
@@ -46,6 +79,21 @@ namespace MathParserTests
         }
 
         [TestMethod]
+        public void Move_ToStringBuilderWithData_AppendsToEnd()
+        {
+            //set up
+            var from = new StringBuilder("foobar");
+            var to = new StringBuilder("potato");
+
+            //act
+            from.Move(to, 1, 2);
+
+            //test
+            Assert.AreEqual("fbar", from.ToString());
+            Assert.AreEqual("potatooo", to.ToString());
+        }
+
+        [TestMethod]
         public void Move_Chunky_MovesSegmentToNewStringBuilder()
         {
             //set up
@@ -58,7 +106,7 @@ namespace MathParserTests
 
             //test
             Assert.AreEqual("foofoofofoofoo", stringBuilder.ToString());
-            Assert.AreEqual("oofoofoofoofoofo", moved);
+            Assert.AreEqual("oofoofoofoofoofo", moved.ToString());
         }
 
         [TestMethod]
