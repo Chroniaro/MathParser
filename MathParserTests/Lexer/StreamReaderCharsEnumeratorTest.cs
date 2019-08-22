@@ -28,7 +28,7 @@ namespace MathParserTests.Lexer
             var chars = reader.Chars();
 
             //test
-            CustomAssertions.AssertEqual(data, chars);
+            CustomAssert.ProduceEqualValues(data.GetEnumerator(), chars.GetEnumerator());
         }
     }
 }
