@@ -12,10 +12,12 @@ namespace MathParser.Lexer
         private readonly IEnumerator<char> source;
 
         /**
-         * Characters pulled source which do not become part of a token should
+         * Characters pulled from source which do not become part of a token should
          * be added to this queue to be reprocessed in future iterations
          */
         private readonly Queue<char> toProcess;
+
+        private readonly Queue<Token> tokens;
 
         #region Constructors
         public TokenStream(IEnumerator<char> source)
@@ -47,30 +49,22 @@ namespace MathParser.Lexer
         object IEnumerator.Current => Current;
         #endregion
 
-        private char? NextChar()
+        private void LexNewTokens()
         {
-            if (toProcess.Count > 0)
-                return toProcess.Dequeue();
-
-            if (source.MoveNext())
-                return source.Current;
-
-            return null;
-        }
-
-        private void RollBack(StringBuilder content, int newLength)
-        {
-            foreach ((var chunk, int i) in content.Range(0, newLength))
-                toProcess.Enqueue(chunk.Span[i]);
-
-            content.Remove(0, newLength);
         }
 
         public bool MoveNext()
         {
-            var content = new StringBuilder(5);
+            if (tokens.Count == 0)
+                LexNewTokens();
 
-            return true;
+            if (tokens.Count > 0)
+            {
+                current = tokens.Dequeue();
+                return true;
+            }
+
+            return false;
         }
 
         public void Reset()

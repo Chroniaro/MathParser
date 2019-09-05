@@ -10,36 +10,45 @@ namespace MathParserTests
     public class StringBuilderUtilTest
     {
         [TestMethod]
-        public void Range_NonChunky_ReturnsCorrectCharactersForRange()
+        [DataRow("foopotato", 2, 3)]
+        [DataRow("teststring", 0, 2)]
+        [DataRow("fooshmoo", 0, 8)]
+        [DataRow("flop", 2, 2)]
+        public void ForEachCharInRange_NonChunky_ReturnsCorrectCharactersForRange(string testString, int start, int length)
         {
             //set up
-            var builder = new StringBuilder("01234567");
+            var builder = new StringBuilder(testString);
 
             //test
-            int index = 2;
-            foreach ((var chunk, int i) in builder.Range(2, 3))
+            string val = "";
+            builder.ForEachCharInRange(start, length, c =>
             {
-                Assert.AreEqual(index.ToString()[0], chunk.Span[i]);
-                ++index;
-            }
-            Assert.AreEqual(5, index);
+                val += c;
+            });
+            Assert.AreEqual(testString.Substring(start, length), val);
         }
 
         [TestMethod]
-        public void Range_Chunky_ReturnsCorrectCharacters()
+        public void ForEachCharInRange_Chunky_ReturnsCorrectCharacters()
         {
+            int start = 4;
+            int length = 10;
+
             //set up
             var builder = new StringBuilder(0);
             for (int i = 0; i < 20; ++i)
                 builder.Append("foo");
 
-            var rangeEnumerator = builder.Range(6, 1).GetEnumerator();
+            string target = builder.ToString().Substring(start, length);
 
             //test
-            Assert.IsTrue(rangeEnumerator.MoveNext());
-            (var chunk, int index) = rangeEnumerator.Current;
-            Assert.AreEqual('f', chunk.Span[index]);
-            Assert.IsFalse(rangeEnumerator.MoveNext());
+            string val = "";
+            builder.ForEachCharInRange(start, length, c =>
+            {
+                val += c;
+            });
+
+            Assert.AreEqual(target, val);
         }
 
         private void TestMove(string initial, int startIndex, int length, string final, string moved)

@@ -6,11 +6,11 @@ namespace MathParser.Util
 {
     public static class StringBuilderUtil
     {
-        public static IEnumerable<(ReadOnlyMemory<char>, int)> Range(this StringBuilder builder, int startIndex, int length)
-        {
-            if (length <= 0)
-                yield break;
+        public delegate void CharConsumer(char c);
 
+        //cannot be enumerator because Span cannot be used inside an enumerator
+        public static void ForEachCharInRange(this StringBuilder builder, int startIndex, int length, CharConsumer consume)
+        {
             int indexInChunk = startIndex;
             int remainingLength = length;
 
@@ -19,12 +19,14 @@ namespace MathParser.Util
                 int chunkLength = chunk.Length;
                 if (indexInChunk < chunkLength)
                 {
+                    var span = chunk.Span;
+
                     for (int i = indexInChunk; i < chunkLength; ++i, --remainingLength)
                     {
                         if (remainingLength <= 0)
-                            yield break;
+                            return;
 
-                        yield return (chunk, i);
+                        consume(span[i]);
                     }
 
                     indexInChunk = 0;
@@ -45,9 +47,7 @@ namespace MathParser.Util
             if (startIndex + length > from.Length)
                 throw new IndexOutOfRangeException("Range extends beyond end of StringBuilder");
 
-            foreach ((var chunk, int i) in from.Range(startIndex, length))
-                to.Append(chunk.Span[i]);
-
+            from.ForEachCharInRange(startIndex, length, c => to.Append(c));
             from.Remove(startIndex, length);
 
             return to;
