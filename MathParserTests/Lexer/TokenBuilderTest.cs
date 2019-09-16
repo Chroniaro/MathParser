@@ -30,7 +30,7 @@ namespace MathParserTests.Lexer
             using var builder = new TokenBuilder(testString.GetEnumerator());
 
             //act
-            for (int i = 0; i < chars; i++)
+            for (int i = 0; i <= chars; i++)
                 builder.MoveNext();
 
             //test
@@ -47,7 +47,7 @@ namespace MathParserTests.Lexer
             using var builder = new TokenBuilder(testString.GetEnumerator());
 
             //act
-            for (int i = 0; i < chars; i++)
+            for (int i = 0; i <= chars; i++)
                 builder.MoveNext();
 
             builder.PopToken();
@@ -71,7 +71,7 @@ namespace MathParserTests.Lexer
             builder.RollBack(rollBackLength);
 
             //test
-            Assert.AreEqual(testString.Substring(0, rollBackLength), builder.BuildToken());
+            Assert.AreEqual(testString.Substring(0, rollBackLength - 1), builder.BuildToken());
         }
 
         [TestMethod]
@@ -84,20 +84,19 @@ namespace MathParserTests.Lexer
             for (int i = 0; i < 4; i++)
                 builder.MoveNext();
 
-            builder.RollBack(2);
+            builder.RollBack(3);
             builder.PopToken();
 
             //test
             string expected = "dfjk";
             CustomAssert.ProduceEqualValues(expected.GetEnumerator(), builder);
-            builder.StepBack();
             Assert.AreEqual(expected, builder.BuildToken());
         }
 
         [TestMethod]
         public void StepBack_AfterMoveForward_ReturnsSameCharacterAgain()
         {
-            //se up
+            //set up
             using var builder = new TokenBuilder("ab".GetEnumerator());
             builder.MoveNext();
             builder.MoveNext();
@@ -107,6 +106,17 @@ namespace MathParserTests.Lexer
 
             //test
             Assert.AreEqual('a', builder.Current);
+        }
+
+        [TestMethod]
+        public void Current_AfterPastEnd_ThrowsOutOfRangeException()
+        {
+            //set up
+            using var builder = new TokenBuilder("".GetEnumerator());
+            builder.MoveNext();
+
+            //test
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => builder.Current);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace MathParser.Lexer
         private int currentIndex;
 
         public char Current => toProcess[currentIndex];
+
         object? IEnumerator.Current => Current;
 
         public TokenBuilder(IEnumerator<char> source)
@@ -67,14 +68,14 @@ namespace MathParser.Lexer
 
         public void PopToken()
         {
-            toProcess.RemoveRange(0, currentIndex + 1);
+            toProcess.RemoveRange(0, currentIndex);
             currentIndex = -1;
         }
 
         public string BuildToken()
         {
-            var builder = new StringBuilder(currentIndex + 1);
-            foreach (char c in toProcess.Take(currentIndex + 1))
+            var builder = new StringBuilder(currentIndex);
+            foreach (char c in toProcess.Take(currentIndex))
                 builder.Append(c);
 
             PopToken();

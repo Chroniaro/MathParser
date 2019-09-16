@@ -10,23 +10,13 @@ namespace MathParser.Lexer
     public class TokenStream : IEnumerator<Token>
     {
         private readonly TokenBuilder tokenBuilder;
-        private readonly List<ILexer> lexers;
+        private readonly IEnumerable<ILexer> lexers;
 
-        #region Constructors
-        public TokenStream(IEnumerator<char> source)
+        internal TokenStream(IEnumerator<char> source, IEnumerable<ILexer> lexers)
         {
             tokenBuilder = new TokenBuilder(source);
-
-            lexers = new List<ILexer>
-            {
-                new NumberLexer()
-            };
+            this.lexers = lexers;
         }
-
-        public TokenStream(IEnumerable<char> source) : this(source.GetEnumerator()) { }
-
-        public TokenStream(StreamReader source) : this(source.Chars()) { }
-        #endregion
 
         #region Current
         private Token? current = null;
@@ -50,9 +40,13 @@ namespace MathParser.Lexer
             foreach (var lexer in lexers)
                 if (lexer.Lex(tokenBuilder) is Token token)
                 {
+                    tokenBuilder.PopToken();
                     current = token;
                     return true;
                 }
+                else
+                    tokenBuilder.Reset();
+
             return false;
         }
 
@@ -70,7 +64,7 @@ namespace MathParser.Lexer
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    tokenBuilder.Dispose();
                 }
 
                 disposedValue = true;
@@ -80,7 +74,6 @@ namespace MathParser.Lexer
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(this);
         }
         #endregion
     }

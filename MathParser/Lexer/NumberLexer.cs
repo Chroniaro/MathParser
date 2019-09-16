@@ -4,54 +4,71 @@ using System.Text;
 
 namespace MathParser.Lexer
 {
-    internal class NumberLexer : ILexer
+    internal class NumberLexer : AbstractLexer
     {
-        public Token? Lex(TokenBuilder builder)
+        public override Token? Lex(TokenBuilder builder)
         {
-            if (Eval(builder) is double value)
-                return new NumberToken(value);
-            else
+            try
+            {
+                if (Eval(builder) is double value)
+                    return new NumberToken(value);
+                else
+                    return null;
+            }
+            catch (ArgumentOutOfRangeException) // Builder ran out of characters unexpectedly
+            {
                 return null;
+            }
         }
 
         private double? Eval(TokenBuilder builder)
         {
-            bool negative = false;
+            bool negative = IsNegative(builder);
 
-            if (!builder.MoveNext())
+            if (LexNumberUnsigned(builder) is double value)
+                return negative ? -value : value;
+            else
                 return null;
+        }
+
+        private bool IsNegative(TokenBuilder builder)
+        {
+            builder.MoveNext();
 
             if (builder.Current == '-')
-                negative = true;
+                return true;
             else if (builder.Current != '+')
                 builder.StepBack();
 
-            if (!builder.MoveNext())
-                return null;
+            return false;
+        }
+
+        private double? LexNumberUnsigned(TokenBuilder builder)
+        {
+            builder.MoveNext();
 
             if (AsDigit(builder.Current) is int firstDigit)
-            {
-                double value = firstDigit;
-                while (builder.MoveNext())
-                {
-                    if (AsDigit(builder.Current) is int digit)
-                        value = 10 * value + digit;
-                    else
-                    {
-                        builder.StepBack();
-                        break;
-                    }
-                }
-                builder.StepBack();
-                builder.PopToken();
-
-                if (negative)
-                    value = -value;
-
-                return value;
-            }
+                return LexNumberTail(firstDigit, builder);
             else
                 return null;
+        }
+
+        private double LexNumberTail(int firstDigit, TokenBuilder builder)
+        {
+            double value = firstDigit;
+
+            while (builder.MoveNext())
+            {
+                if (AsDigit(builder.Current) is int digit)
+                    value = 10 * value + digit;
+                else
+                {
+                    builder.StepBack();
+                    break;
+                }
+            }
+
+            return value;
         }
 
         private int? AsDigit(char c)

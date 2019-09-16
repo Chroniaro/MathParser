@@ -13,47 +13,22 @@ namespace MathParserTests.Lexer
         public void Current_BeforeMoveNext_ThrowsInvalidOperation()
         {
             //set up
-            using var stream = new TokenStream("");
+            using var stream = new Tokenizer()
+                .ReadFromSource("")
+                .GetEnumerator();
 
             //test;
             Assert.ThrowsException<InvalidOperationException>(() => stream.Current);
         }
 
-        private void TestLexing(string input, params Token[] output)
-        {
-            //set up
-            var expected = ((IEnumerable<Token>)output).GetEnumerator();
-            using var tokenStream = new TokenStream(input);
-
-            //test
-            CustomAssert.ProduceEqualValues(expected, tokenStream);
-        }
-
         [TestMethod]
         public void EmptyString_NoTokens()
         {
-            TestLexing("", new Token[] { });
-        }
+            var tokenStream = new Tokenizer()
+                .ReadFromSource("")
+                .GetEnumerator();
 
-        [TestMethod]
-        [DataRow("0", 0)]
-        [DataRow("5", 5)]
-        [DataRow("020", 20)]
-        [DataRow("123", 123)]
-        public void SimpleIntegerString_NumberTokenWithCorrectValue(string input, double expectedOutput)
-        {
-            TestLexing(input, new NumberToken(expectedOutput));
-        }
-
-        [TestMethod]
-        [DataRow("-0", 0)]
-        [DataRow("+0", 0)]
-        [DataRow("+020", 20)]
-        [DataRow("-123", -123)]
-        [DataRow("+87", 87)]
-        public void SignedIntegerString_NumberTokenWithCorrectValue(string input, double expectedOutput)
-        {
-            TestLexing(input, new NumberToken(expectedOutput));
+            Assert.IsFalse(tokenStream.MoveNext());
         }
     }
 }
