@@ -22,7 +22,9 @@ namespace MathParserTests.Lexer
             if (expectedOutput == null)
                 Assert.AreEqual(null, token);
             else
-                Assert.AreEqual(expectedOutput, token.Value);
+                Assert.AreEqual(expectedOutput.Value, token.Value);
+
+            Assert.IsFalse(tokenBuilder.MoveNext());
         }
 
         [TestMethod]
@@ -30,7 +32,7 @@ namespace MathParserTests.Lexer
         [DataRow("5", 5)]
         [DataRow("020", 20)]
         [DataRow("123", 123)]
-        public void SimpleIntegerString_NumberTokenWithCorrectValue(string input, double expectedOutput)
+        public void Lex_SimpleInteger(string input, double expectedOutput)
         {
             TestLexing(input, expectedOutput);
         }
@@ -41,7 +43,33 @@ namespace MathParserTests.Lexer
         [DataRow("+020", 20)]
         [DataRow("-123", -123)]
         [DataRow("+87", 87)]
-        public void SignedIntegerString_NumberTokenWithCorrectValue(string input, double expectedOutput)
+        public void Lex_SignedInteger(string input, double expectedOutput)
+        {
+            TestLexing(input, expectedOutput);
+        }
+
+        [TestMethod]
+        [DataRow("0.0", 0)]
+        [DataRow("12.7", 12.7)]
+        [DataRow("-41.523", -41.523)]
+        public void Lex_NumberWithInternalDecimalPoint(string input, double expectedOutput)
+        {
+            TestLexing(input, expectedOutput);
+        }
+
+        [TestMethod]
+        [DataRow("0.", 0)]
+        [DataRow("+142.", 142)]
+        public void Lex_IntegerWithTerminatingDecimalPoint(string input, double expectedOutput)
+        {
+            TestLexing(input, expectedOutput);
+        }
+
+        [TestMethod]
+        [DataRow(".0", 0)]
+        [DataRow("-.123", -.123)]
+        [DataRow(".00025", .00025)]
+        public void Lex_NumberWithLeadingDecimalPoint(string input, double expectedOutput)
         {
             TestLexing(input, expectedOutput);
         }

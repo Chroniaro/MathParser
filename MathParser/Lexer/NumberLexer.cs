@@ -10,7 +10,7 @@ namespace MathParser.Lexer
         {
             try
             {
-                if (Eval(builder) is double value)
+                if (LexNumber(builder) is double value)
                     return new NumberToken(value);
                 else
                     return null;
@@ -21,7 +21,7 @@ namespace MathParser.Lexer
             }
         }
 
-        private double? Eval(TokenBuilder builder)
+        private double? LexNumber(TokenBuilder builder)
         {
             bool negative = IsNegative(builder);
 
@@ -45,22 +45,36 @@ namespace MathParser.Lexer
 
         private double? LexNumberUnsigned(TokenBuilder builder)
         {
-            builder.MoveNext();
+            double value = LexDigits(builder, out int digits);
 
-            if (AsDigit(builder.Current) is int firstDigit)
-                return LexNumberTail(firstDigit, builder);
-            else
+            if (builder.MoveNext() && builder.Current == '.')
+            {
+                double valueAfterDecimal = LexDigits(builder, out int digitsAfterDecimal);
+                for (int i = 0; i < digitsAfterDecimal; ++i)
+                    valueAfterDecimal /= 10;
+
+                value += valueAfterDecimal;
+                digits += digitsAfterDecimal;
+            }
+
+            if (digits == 0)
                 return null;
+
+            return value;
         }
 
-        private double LexNumberTail(int firstDigit, TokenBuilder builder)
+        private double LexDigits(TokenBuilder builder, out int numberOfDigits)
         {
-            double value = firstDigit;
+            double value = 0;
+            numberOfDigits = 0;
 
             while (builder.MoveNext())
             {
                 if (AsDigit(builder.Current) is int digit)
+                {
                     value = 10 * value + digit;
+                    ++numberOfDigits;
+                }
                 else
                 {
                     builder.StepBack();
