@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MathParser.Lexer
 {
-    class Tokenizer : IEnumerable<Token>
+    public class Tokenizer : IEnumerable<Token>
     {
         private static readonly ILexer[] DEFAULT_LEXERS =
         {

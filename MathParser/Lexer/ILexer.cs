@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MathParser.Lexer
 {
-    internal interface ILexer
+    public interface ILexer
     {
         Token? Lex(TokenBuilder builder);
     }

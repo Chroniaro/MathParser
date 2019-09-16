@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MathParser.Lexer
 {
-    internal abstract class AbstractLexer : ILexer
+    public abstract class AbstractLexer : ILexer
     {
         public abstract Token? Lex(TokenBuilder builder);
 

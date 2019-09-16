@@ -7,7 +7,7 @@ using System.Text;
 
 namespace MathParser.Lexer
 {
-    internal class TokenBuilder : LookbackEnumerator<char>
+    public class TokenBuilder : LookbackEnumerator<char>
     {
         private readonly IEnumerator<char> source;
 
