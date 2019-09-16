@@ -9,22 +9,18 @@ namespace MathParser.Lexer
 {
     public class TokenStream : IEnumerator<Token>
     {
-        private readonly IEnumerator<char> source;
-
-        /**
-         * Characters pulled from source which do not become part of a token should
-         * be added to this queue to be reprocessed in future iterations
-         */
-        private readonly Queue<char> toProcess;
-
-        private readonly Queue<Token> tokens;
+        private readonly TokenBuilder tokenBuilder;
+        private readonly List<ILexer> lexers;
 
         #region Constructors
         public TokenStream(IEnumerator<char> source)
         {
-            this.source = source;
+            tokenBuilder = new TokenBuilder(source);
 
-            toProcess = new Queue<char>(5);
+            lexers = new List<ILexer>
+            {
+                new NumberLexer()
+            };
         }
 
         public TokenStream(IEnumerable<char> source) : this(source.GetEnumerator()) { }
@@ -49,21 +45,14 @@ namespace MathParser.Lexer
         object IEnumerator.Current => Current;
         #endregion
 
-        private void LexNewTokens()
-        {
-        }
-
         public bool MoveNext()
         {
-            if (tokens.Count == 0)
-                LexNewTokens();
-
-            if (tokens.Count > 0)
-            {
-                current = tokens.Dequeue();
-                return true;
-            }
-
+            foreach (var lexer in lexers)
+                if (lexer.Lex(tokenBuilder) is Token token)
+                {
+                    current = token;
+                    return true;
+                }
             return false;
         }
 

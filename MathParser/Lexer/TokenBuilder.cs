@@ -1,52 +1,96 @@
 ﻿using MathParser.Util;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace MathParser.Lexer
 {
-    internal class TokenBuilder
+    internal class TokenBuilder : IEnumerator<char>
     {
         private readonly IEnumerator<char> source;
-        private readonly Queue<char> toProcess;
-        
-        public StringBuilder Token { get; }
+
+        private readonly List<char> toProcess;
+        private int currentIndex;
+
+        public char Current => toProcess[currentIndex];
+        object? IEnumerator.Current => Current;
 
         public TokenBuilder(IEnumerator<char> source)
         {
             this.source = source;
-            toProcess = new Queue<char>(10);
-            Token = new StringBuilder(10);
+            toProcess = new List<char>(10);
+            currentIndex = -1;
         }
 
-        public char? NextChar()
+        private bool LoadMoreChars()
         {
-            char nextChar;
-            if (toProcess.Count > 0)
-                nextChar = toProcess.Dequeue();
-            else if (source.MoveNext())
-                nextChar = source.Current;
+            if (source.MoveNext())
+            {
+                toProcess.Add(source.Current);
+                return true;
+            }
             else
-                return null;
+                return false;
+        }
 
-            Token.Append(nextChar);
-            return nextChar;
+        public bool MoveNext()
+        {
+            ++currentIndex;
+            if (currentIndex >= toProcess.Count)
+                return LoadMoreChars();
+            else
+                return true;
+        }
+
+        public bool StepBack()
+        {
+            if (currentIndex >= 0)
+            {
+                --currentIndex;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public void Reset()
+        {
+            currentIndex = -1;
         }
 
         public void RollBack(int newLength)
         {
-            int start = newLength;
-            int length = Token.Length - newLength;
-
-            Token.ForEachCharInRange(start, length, toProcess.Enqueue);
-            Token.Remove(start, length);
+            currentIndex = newLength - 1;
         }
 
-        public string PopToken()
+        public void PopToken()
         {
-            string token = Token.ToString();
-            Token.Clear();
-            return token;
+            toProcess.RemoveRange(0, currentIndex + 1);
+            currentIndex = -1;
         }
+
+        public string BuildToken()
+        {
+            var builder = new StringBuilder(currentIndex + 1);
+            foreach (char c in toProcess.Take(currentIndex + 1))
+                builder.Append(c);
+
+            PopToken();
+
+            return builder.ToString();
+        }
+
+        #region IDisposable Support
+
+        protected virtual void Dispose(bool disposing)
+        {}
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
     }
 }

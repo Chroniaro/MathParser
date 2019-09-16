@@ -46,8 +46,8 @@ namespace MathParserTests.Lexer
         }
 
         [TestMethod]
+        [DataRow("-0", 0)]
         [DataRow("+0", 0)]
-        [DataRow("-0", 5)]
         [DataRow("+020", 20)]
         [DataRow("-123", -123)]
         [DataRow("+87", 87)]
