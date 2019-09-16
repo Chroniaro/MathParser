@@ -41,7 +41,7 @@ namespace MathParserTests.Lexer
         [DataRow("soup", 2)]
         [DataRow("foo", 3)]
         [DataRow("zero", 0)]
-        public void PopToken_ClearsProcessedChars(string testString, int chars)
+        public void ForgetPreceding_ClearsProcessedChars(string testString, int chars)
         {
             //set up
             using var builder = new TokenBuilder(testString.GetEnumerator());
@@ -50,7 +50,7 @@ namespace MathParserTests.Lexer
             for (int i = 0; i <= chars; i++)
                 builder.MoveNext();
 
-            builder.PopToken();
+            builder.ForgetPreceding();
 
             //test
             CustomAssert.ProduceEqualValues(testString.Substring(chars).GetEnumerator(), builder);
@@ -85,7 +85,7 @@ namespace MathParserTests.Lexer
                 builder.MoveNext();
 
             builder.RollBack(3);
-            builder.PopToken();
+            builder.ForgetPreceding();
 
             //test
             string expected = "dfjk";

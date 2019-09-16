@@ -40,7 +40,7 @@ namespace MathParser.Lexer
             foreach (var lexer in lexers)
                 if (lexer.Lex(tokenBuilder) is Token token)
                 {
-                    tokenBuilder.PopToken();
+                    tokenBuilder.ForgetPreceding();
                     current = token;
                     return true;
                 }
