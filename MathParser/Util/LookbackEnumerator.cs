@@ -8,7 +8,7 @@ namespace MathParser.Util
     public abstract class LookbackEnumerator<T> : IEnumerator<T>
     {
         protected List<T> LoadedValues { get; }
-        protected int CurrentIndex;
+        protected int CurrentIndex { get; set; }
 
         public bool IsPastEnd => CurrentIndex >= LoadedValues.Count;
         public T Current => LoadedValues[CurrentIndex];
@@ -49,11 +49,6 @@ namespace MathParser.Util
 
             --CurrentIndex;
             return true;
-        }
-
-        public void RollBack(int newLength)
-        {
-            CurrentIndex = newLength - 1;
         }
 
         public void Reset()

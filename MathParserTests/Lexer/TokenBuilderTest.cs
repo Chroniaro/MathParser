@@ -34,7 +34,7 @@ namespace MathParserTests.Lexer
                 builder.MoveNext();
 
             //test
-            Assert.AreEqual(testString.Substring(0, chars), builder.BuildToken());
+            Assert.AreEqual(testString.Substring(0, chars), builder.CollectPreceding());
         }
 
         [TestMethod]
@@ -54,43 +54,6 @@ namespace MathParserTests.Lexer
 
             //test
             CustomAssert.ProduceEqualValues(testString.Substring(chars).GetEnumerator(), builder);
-        }
-
-        [TestMethod]
-        [DataRow("floppypotato", 6, 4)]
-        public void RollBack_RemovesProcessedCharsFromCurrentToken(string testString, 
-            int initiallyProcessedChars, int rollBackLength)
-        {
-            //set up
-            using var builder = new TokenBuilder(testString.GetEnumerator());
-
-            //act
-            for (int i = 0; i < initiallyProcessedChars; i++)
-                builder.MoveNext();
-
-            builder.RollBack(rollBackLength);
-
-            //test
-            Assert.AreEqual(testString.Substring(0, rollBackLength - 1), builder.BuildToken());
-        }
-
-        [TestMethod]
-        public void NextCharAndBuildToken_AfterRollBack_IncludeRolledBackCharsBeforeContinuing()
-        {
-            //set up
-            using var builder = new TokenBuilder("asdfjk".GetEnumerator());
-
-            //act
-            for (int i = 0; i < 4; i++)
-                builder.MoveNext();
-
-            builder.RollBack(3);
-            builder.ForgetPreceding();
-
-            //test
-            string expected = "dfjk";
-            CustomAssert.ProduceEqualValues(expected.GetEnumerator(), builder);
-            Assert.AreEqual(expected, builder.BuildToken());
         }
 
         [TestMethod]

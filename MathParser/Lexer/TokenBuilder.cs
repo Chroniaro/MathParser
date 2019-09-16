@@ -22,7 +22,7 @@ namespace MathParser.Lexer
                 LoadedValues.Add(source.Current);
         }
 
-        public string BuildToken()
+        public string CollectPreceding()
         {
             var builder = new StringBuilder(CurrentIndex);
             foreach (char c in LoadedValues.Take(CurrentIndex))
