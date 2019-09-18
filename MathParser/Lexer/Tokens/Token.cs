@@ -13,6 +13,11 @@ namespace MathParser.Lexer
             Content = content;
         }
 
+        public override string ToString()
+        {
+            return GetType().Name + "[" + Content + "]";
+        }
+
         public override bool Equals(object? obj)
         {
             if (obj == null)

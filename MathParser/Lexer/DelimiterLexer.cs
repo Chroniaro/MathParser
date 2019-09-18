@@ -1,6 +1,4 @@
 ﻿using rm.Trie;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace MathParser.Lexer
@@ -9,13 +7,6 @@ namespace MathParser.Lexer
     {
         public delegate DelimiterToken TokenConstructor(string content);
 
-        private static readonly TokenConstructor DEFAULT_CONSTRUCTOR = content => new DelimiterToken(content);
-
-        private static readonly string[] DEFAULT_DELIMITERS =
-        {
-            "+", "-", "*", "/"
-        };
-
         public TrieMap<TokenConstructor> Delimiters { get; }
 
         public DelimiterLexer()
@@ -23,18 +14,52 @@ namespace MathParser.Lexer
             Delimiters = new TrieMap<TokenConstructor>();
         }
 
+        public DelimiterLexer UseDelimiter(TokenConstructor constructor, string delimiter)
+        {
+            Delimiters.Add(delimiter, constructor);
+            return this;
+        }
+
         public DelimiterLexer UseDelimiters(TokenConstructor constructor, params string[] delimiters)
         {
             foreach (string delimiter in delimiters)
-                Delimiters.Add(delimiter, constructor);
+                UseDelimiter(constructor, delimiter);
 
             return this;
         }
 
         public DelimiterLexer UseDelimiters(params string[] delimiters) =>
-            UseDelimiters(DEFAULT_CONSTRUCTOR, delimiters);
+            UseDelimiters(s => new DelimiterToken(s), delimiters);
 
-        public DelimiterLexer UseDefaultDelimiters => UseDelimiters(DEFAULT_DELIMITERS);
+        public DelimiterLexer UseDelimiters(GroupingTokenManager groupingDelimiters)
+        {
+            foreach (var leftToken in groupingDelimiters.LeftToRightMap.Keys)
+                UseDelimiter(groupingDelimiters.CreateLeft, leftToken);
+
+            foreach (var rightToken in groupingDelimiters.RightToLeftMap.Keys)
+                UseDelimiter(groupingDelimiters.CreateRight, rightToken);
+
+            return this;
+        }
+
+        public DelimiterLexer UseDefaultDelimiters()
+        {
+            UseDelimiters("+", "-", "*", "/");
+
+            UseDelimiters(
+                s => new WhiteSpaceToken(s),
+                " ", "\t", "\n"
+            );
+
+            UseDelimiters(
+                new GroupingTokenManager()
+                    .UseGroupingPair("(", ")")
+                    .UseGroupingPair("[", "]")
+                    .UseGroupingPair("{", "}")
+            );
+
+            return this;
+        }
 
         public override Token? Lex(TokenBuilder tokenBuilder)
         {

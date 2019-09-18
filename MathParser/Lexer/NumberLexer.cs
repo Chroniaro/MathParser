@@ -23,28 +23,6 @@ namespace MathParser.Lexer
 
         private double? LexNumber(TokenBuilder builder)
         {
-            bool negative = IsNegative(builder);
-
-            if (LexNumberUnsigned(builder) is double value)
-                return negative ? -value : value;
-            else
-                return null;
-        }
-
-        private bool IsNegative(TokenBuilder builder)
-        {
-            builder.MoveNext();
-
-            if (builder.Current == '-')
-                return true;
-            else if (builder.Current != '+')
-                builder.StepBack();
-
-            return false;
-        }
-
-        private double? LexNumberUnsigned(TokenBuilder builder)
-        {
             double value = LexDigits(builder, out int digits);
 
             if (builder.MoveNext() && builder.Current == '.')

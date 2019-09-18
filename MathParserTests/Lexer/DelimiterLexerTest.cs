@@ -56,5 +56,31 @@ namespace MathParserTests.Lexer
             //test
             Assert.IsNull(token);
         }
+
+        private class CustomDelimiterToken : DelimiterToken
+        {
+            public CustomDelimiterToken(string content) :
+                base(content)
+            { }
+        }
+
+        [TestMethod]
+        [DataRow(new string[] { "foo", "bar" }, "baz")]
+        public void Lex_CustomTokenType_CallsCorrectConstructor(string[] otherOptions, string delimiter)
+        {
+            //set up
+            var delimiterLexer = new DelimiterLexer()
+                .UseDelimiters(otherOptions)
+                .UseDelimiters(content => new CustomDelimiterToken(content), delimiter);
+            var tokenBuilder = new TokenBuilder(delimiter.GetEnumerator());
+
+            //act
+            var token = delimiterLexer.Lex(tokenBuilder);
+
+            //test
+            Assert.IsTrue(token is CustomDelimiterToken);
+            Assert.AreEqual(delimiter, token.Content);
+            Assert.IsFalse(tokenBuilder.MoveNext());
+        }
     }
 }

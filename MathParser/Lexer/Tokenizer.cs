@@ -8,11 +8,6 @@ namespace MathParser.Lexer
 {
     public class Tokenizer : IEnumerable<Token>
     {
-        private static readonly ILexer[] DEFAULT_LEXERS =
-        {
-            new NumberLexer()
-        };
-
         public IEnumerator<char>? Source { get; set; }
         public ISet<ILexer> Lexers { get; }
 
@@ -52,7 +47,11 @@ namespace MathParser.Lexer
             UseLexers((IEnumerable<ILexer>)lexers);
 
         public Tokenizer UseDefaultLexers() =>
-            UseLexers(DEFAULT_LEXERS);
+            UseLexers(
+                new NumberLexer(),
+                new DelimiterLexer()
+                    .UseDefaultDelimiters()
+            );
 
         public IEnumerator<Token> GetEnumerator()
         {
