@@ -12,5 +12,21 @@ namespace MathParser.Lexer
         {
             Content = content;
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null)
+                return false;
+
+            if (obj.GetType() != GetType())
+                return false;
+
+            return Content == ((Token)obj).Content;
+        }
+
+        public override int GetHashCode()
+        {
+            return GetType().GetHashCode() ^ Content.GetHashCode();
+        }
     }
 }

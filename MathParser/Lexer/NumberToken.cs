@@ -12,5 +12,18 @@ namespace MathParser.Lexer
         {
             Value = value;
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is NumberToken numberObj)
+                return Value == numberObj.Value;
+            else
+                return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
     }
 }
