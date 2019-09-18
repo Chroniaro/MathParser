@@ -38,20 +38,9 @@ namespace MathParserTests.Lexer
         }
 
         [TestMethod]
-        [DataRow("-0", 0)]
-        [DataRow("+0", 0)]
-        [DataRow("+020", 20)]
-        [DataRow("-123", -123)]
-        [DataRow("+87", 87)]
-        public void Lex_SignedInteger(string input, double expectedOutput)
-        {
-            TestLexing(input, expectedOutput);
-        }
-
-        [TestMethod]
         [DataRow("0.0", 0)]
         [DataRow("12.7", 12.7)]
-        [DataRow("-41.523", -41.523)]
+        [DataRow("41.523", 41.523)]
         public void Lex_NumberWithInternalDecimalPoint(string input, double expectedOutput)
         {
             TestLexing(input, expectedOutput);
@@ -59,7 +48,7 @@ namespace MathParserTests.Lexer
 
         [TestMethod]
         [DataRow("0.", 0)]
-        [DataRow("+142.", 142)]
+        [DataRow("142.", 142)]
         public void Lex_IntegerWithTerminatingDecimalPoint(string input, double expectedOutput)
         {
             TestLexing(input, expectedOutput);
@@ -67,7 +56,7 @@ namespace MathParserTests.Lexer
 
         [TestMethod]
         [DataRow(".0", 0)]
-        [DataRow("-.123", -.123)]
+        [DataRow(".123", .123)]
         [DataRow(".00025", .00025)]
         public void Lex_NumberWithLeadingDecimalPoint(string input, double expectedOutput)
         {
