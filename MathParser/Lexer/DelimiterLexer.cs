@@ -52,11 +52,6 @@ namespace MathParser.Lexer
         {
             UseDelimiters("+", "-", "*", "/");
 
-            UseDelimiters(
-                s => new WhiteSpaceToken(s),
-                " ", "\t", "\n"
-            );
-
             UseGroupingDelimiterPairs(
                 ("(", ")"),
                 ("[", "]"),

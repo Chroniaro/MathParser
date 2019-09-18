@@ -9,7 +9,7 @@ namespace MathParser
     {
         static void Main(string[] args)
         {
-            string testString = "(1 + 2)/3 * [4-7]";
+            string testString = "(1 +  2)/3 * [4-7]";
 
             var tokenizer = new Tokenizer()
                 .UseDefaultLexers()

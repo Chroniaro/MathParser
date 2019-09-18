@@ -58,6 +58,9 @@ namespace MathParser.Util
 
         public void ForgetPreceding()
         {
+            if (CurrentIndex < 0)
+                return;
+
             LoadedValues.RemoveRange(0, CurrentIndex);
             CurrentIndex = -1;
         }

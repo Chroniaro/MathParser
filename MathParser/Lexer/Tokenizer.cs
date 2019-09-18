@@ -50,7 +50,9 @@ namespace MathParser.Lexer
             UseLexers(
                 new NumberLexer(),
                 new DelimiterLexer()
-                    .UseDefaultDelimiters()
+                    .UseDefaultDelimiters(),
+                new WhitespaceLexer()
+                    .UseDefaultWhitespaceCharacters()
             );
 
         public IEnumerator<Token> GetEnumerator()
