@@ -4,9 +4,9 @@ using System.Text;
 
 namespace MathParser.Lexer
 {
-    public class WhiteSpaceToken : DelimiterToken
+    public class WhitespaceToken : DelimiterToken
     {
-        public WhiteSpaceToken(string value) : base(value)
+        public WhitespaceToken(string value) : base(value)
         { }
     }
 }

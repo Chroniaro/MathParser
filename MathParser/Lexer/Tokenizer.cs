@@ -48,11 +48,13 @@ namespace MathParser.Lexer
 
         public Tokenizer UseDefaultLexers() =>
             UseLexers(
-                new NumberLexer(),
+                new WhitespaceLexer()
+                    .UseDefaultWhitespaceCharacters(),
                 new DelimiterLexer()
                     .UseDefaultDelimiters(),
-                new WhitespaceLexer()
-                    .UseDefaultWhitespaceCharacters()
+                new NumberLexer(),
+                new IdentifierLexer()
+                    .UseDefaultIdentifierCharacters()
             );
 
         public IEnumerator<Token> GetEnumerator()

@@ -7,7 +7,7 @@ using System.Text;
 namespace MathParserTests.Lexer
 {
     [TestClass]
-    public class WhitespaceLexerTest
+    public class CharacterSetLexerTest
     {
         private void TestLexing(string input, string firstWhitespace)
         {
@@ -20,7 +20,7 @@ namespace MathParserTests.Lexer
             var token = whitespaceLexer.Lex(tokenBuilder);
 
             //test
-            Assert.IsTrue(token is WhiteSpaceToken);
+            Assert.IsTrue(token is WhitespaceToken);
             Assert.AreEqual(token.Content, firstWhitespace);
         }
 

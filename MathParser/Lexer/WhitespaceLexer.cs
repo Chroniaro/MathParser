@@ -4,38 +4,20 @@ using System.Text;
 
 namespace MathParser.Lexer
 {
-    class WhitespaceLexer : AbstractLexer
+    class WhitespaceLexer : CharacterSetLexer
     {
-        private ISet<char> WhitespaceCharacters { get; }
+        public new ISet<char> IncludedCharacters => base.IncludedCharacters;
 
-        public WhitespaceLexer()
-        {
-            WhitespaceCharacters = new HashSet<char>(4);
-        }
+        protected override Token ConstructToken(string chars) =>
+            new WhitespaceToken(chars);
 
-        public WhitespaceLexer UseWhitespaceCharacters(params char[] whitespaceChars)
-        {
-            WhitespaceCharacters.UnionWith(whitespaceChars);
-            return this;
-        }
+        public new WhitespaceLexer UseCharacters(params char[] chars) =>
+            (WhitespaceLexer)base.UseCharacters(chars);
+
+        public new WhitespaceLexer UseCharactersInRange(char first, char last) =>
+            (WhitespaceLexer)base.UseCharactersInRange(first, last);
 
         public WhitespaceLexer UseDefaultWhitespaceCharacters() =>
-            UseWhitespaceCharacters(' ', '\t', '\n');
-
-        public bool IsWhitespace(char c) => WhitespaceCharacters.Contains(c);
-
-        private bool IsNextWhitespace(TokenBuilder builder) =>
-            builder.MoveNext() && IsWhitespace(builder.Current);
-
-        public override Token? Lex(TokenBuilder builder)
-        {
-            if (!IsNextWhitespace(builder))
-                return null;
-
-            while (IsNextWhitespace(builder))
-                ; // DO NOTHING
-
-            return new WhiteSpaceToken(builder.CollectPreceding());
-        }
+            (WhitespaceLexer) UseCharacters(' ', '\t', '\n');
     }
 }

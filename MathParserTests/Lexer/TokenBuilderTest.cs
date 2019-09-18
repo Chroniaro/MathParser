@@ -57,6 +57,19 @@ namespace MathParserTests.Lexer
         }
 
         [TestMethod]
+        public void ForgetProcedeing_WithNoProcedeing_DoesNotThrowExceptions()
+        {
+            //set up
+            using var builder = new TokenBuilder("".GetEnumerator());
+
+            //act
+            builder.ForgetPreceding();
+            builder.ForgetPreceding();
+
+            //Nothing to assert, this is just to test that no exceptions were thrown
+        }
+
+        [TestMethod]
         public void StepBack_AfterMoveForward_ReturnsSameCharacterAgain()
         {
             //set up
