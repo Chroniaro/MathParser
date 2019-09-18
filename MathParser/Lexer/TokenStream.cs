@@ -47,7 +47,10 @@ namespace MathParser.Lexer
                 else
                     tokenBuilder.Reset();
 
-            return false;
+            if (tokenBuilder.MoveNext())
+                throw new InvalidDataException("Failed to create token at character " + tokenBuilder.Current);
+            else
+                return false;
         }
 
         public void Reset()

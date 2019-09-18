@@ -31,7 +31,7 @@ namespace MathParser.Lexer
         public DelimiterLexer UseDelimiters(params string[] delimiters) =>
             UseDelimiters(s => new DelimiterToken(s), delimiters);
 
-        public DelimiterLexer UseDelimiters(GroupingTokenManager groupingDelimiters)
+        public DelimiterLexer UseGroupingDelimiterPairs(GroupingDelimiterPairManager groupingDelimiters)
         {
             foreach (var leftToken in groupingDelimiters.LeftToRightMap.Keys)
                 UseDelimiter(groupingDelimiters.CreateLeft, leftToken);
@@ -42,6 +42,12 @@ namespace MathParser.Lexer
             return this;
         }
 
+        public DelimiterLexer UseGroupingDelimiterPairs(params (string, string)[] pairs) =>
+            UseGroupingDelimiterPairs(
+                new GroupingDelimiterPairManager()
+                    .UseGroupingPairs(pairs)
+            );
+
         public DelimiterLexer UseDefaultDelimiters()
         {
             UseDelimiters("+", "-", "*", "/");
@@ -51,11 +57,10 @@ namespace MathParser.Lexer
                 " ", "\t", "\n"
             );
 
-            UseDelimiters(
-                new GroupingTokenManager()
-                    .UseGroupingPair("(", ")")
-                    .UseGroupingPair("[", "]")
-                    .UseGroupingPair("{", "}")
+            UseGroupingDelimiterPairs(
+                ("(", ")"),
+                ("[", "]"),
+                ("{", "}")
             );
 
             return this;

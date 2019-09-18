@@ -4,21 +4,29 @@ using System.Text;
 
 namespace MathParser.Lexer
 {
-    public class GroupingTokenManager
+    public class GroupingDelimiterPairManager
     {
         public IDictionary<string, string> LeftToRightMap { get; }
         public IDictionary<string, string> RightToLeftMap { get; }
 
-        public GroupingTokenManager()
+        public GroupingDelimiterPairManager()
         {
             LeftToRightMap = new Dictionary<string, string>(10);
             RightToLeftMap = new Dictionary<string, string>(10);
         }
 
-        public GroupingTokenManager UseGroupingPair(string leftToken, string rightToken)
+        public GroupingDelimiterPairManager UseGroupingPair(string leftToken, string rightToken)
         {
             LeftToRightMap.Add(leftToken, rightToken);
             RightToLeftMap.Add(rightToken, leftToken);
+
+            return this;
+        }
+
+        public GroupingDelimiterPairManager UseGroupingPairs(params (string, string)[] pairs)
+        {
+            foreach ((string left, string right) in pairs)
+                UseGroupingPair(left, right);
 
             return this;
         }
