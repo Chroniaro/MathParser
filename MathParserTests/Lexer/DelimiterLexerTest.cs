@@ -9,32 +9,52 @@ namespace MathParserTests.Lexer
     [TestClass]
     public class DelimiterLexerTest
     {
-        [TestMethod]
-        [DataRow(new string[] {
-            "+", "-", "*", "/", "foo", "--"
-        })]
-        public void Lex_RecognizesDelimiters(string[] delimiters)
+        private void TestLexing(string[] options, string delimiter)
         {
             //set up
-            var lexer = new DelimiterLexer().UseDelimiters(delimiters);
+            var delimiterLexer = new DelimiterLexer()
+                .UseDelimiters(options);
+            var tokenBuilder = new TokenBuilder(delimiter.GetEnumerator());
 
-            foreach (string target in delimiters)
-            {
-                var tokenizer = new Tokenizer()
-                    .ReadFromSource(target)
-                    .UseLexer(lexer);
+            //act
+            var token = (DelimiterToken)delimiterLexer.Lex(tokenBuilder);
 
-                var tokenStream = tokenizer.GetEnumerator();
+            //test
+            Assert.AreEqual(delimiter, token.Content);
+            Assert.IsFalse(tokenBuilder.MoveNext());
+        }
 
-                //act
-                tokenStream.MoveNext();
-                var token = tokenStream.Current;
+        [TestMethod]
+        [DataRow(new string[] { "+", "-", "foo" }, "-")]
+        [DataRow(new string[] { "flip", "flop", "fling"}, "fling")]
+        [DataRow(new string[] { "z", "y", "x" }, "z")]
+        public void Lex_DelimiterInOptions_RecognizesDelimiter(string[] options, string delimiter)
+        {
+            TestLexing(options, delimiter);
+        }
 
-                //test
-                Assert.IsTrue(token is DelimiterToken);
-                Assert.AreEqual(target, token.Content);
-                Assert.IsFalse(tokenStream.MoveNext());
-            }
+        [TestMethod]
+        [DataRow(new string[] { "++", "+", "++++", "+++" }, "++++" )]
+        [DataRow(new string[] { "foo", "soup", "foobar", "foobarbaz" }, "foobar" )]
+        public void Lex_DelimiterBeginningIsAlsoAnOption_ChoosesLongerDelimiter(string[] options, string delimiter)
+        {
+            TestLexing(options, delimiter);
+        }
+
+        [TestMethod]
+        [DataRow(new string[] { "foo", "bar"}, "baz")]
+        public void Lex_StringContainsNoDelimiters_ReturnsNull(string[] options, string testString)
+        {
+            //set up
+            var delimiterLexer = new DelimiterLexer()
+                .UseDelimiters(options);
+            var tokenBuilder = new TokenBuilder(testString.GetEnumerator());
+
+            //act
+            var token = delimiterLexer.Lex(tokenBuilder);
+
+            //test
+            Assert.IsNull(token);
         }
     }
 }
