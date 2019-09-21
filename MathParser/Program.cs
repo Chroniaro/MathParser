@@ -1,4 +1,5 @@
 ﻿using MathParser.Lexer;
+using MathParser.Parser;
 using System;
 using System.Runtime.CompilerServices;
 
@@ -9,15 +10,15 @@ namespace MathParser
     {
         static void Main(string[] args)
         {
-            string testString = "(1 +  2)/3 * [4x_i-7]";
+            string testString = "(1 + 2) *  3 ";
 
             var tokenizer = new Tokenizer()
                 .UseDefaultLexers()
                 .ReadFromSource(testString);
 
-            foreach (var token in tokenizer)
-                if (!(token is WhitespaceToken))
-                    Console.WriteLine(token);
+            var parser = new Parser.Parser();
+            Console.WriteLine(parser.Parse(tokenizer.GetTokenStream()));
+
         }
     }
 }
