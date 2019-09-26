@@ -3,7 +3,7 @@ using System.Text;
 
 namespace MathParser.Lexer
 {
-    class DelimiterLexer : AbstractLexer
+    public class DelimiterLexer : AbstractLexer
     {
         public delegate DelimiterToken TokenConstructor(string content);
 
@@ -33,12 +33,7 @@ namespace MathParser.Lexer
 
         public DelimiterLexer UseGroupingDelimiterPairs(GroupingDelimiterPairManager groupingDelimiters)
         {
-            foreach (var leftToken in groupingDelimiters.LeftToRightMap.Keys)
-                UseDelimiter(groupingDelimiters.CreateLeft, leftToken);
-
-            foreach (var rightToken in groupingDelimiters.RightToLeftMap.Keys)
-                UseDelimiter(groupingDelimiters.CreateRight, rightToken);
-
+            groupingDelimiters.AddTo(this);
             return this;
         }
 
@@ -48,18 +43,13 @@ namespace MathParser.Lexer
                     .UseGroupingPairs(pairs)
             );
 
-        public DelimiterLexer UseDefaultDelimiters()
-        {
-            UseDelimiters("+", "-", "*", "/");
-
-            UseGroupingDelimiterPairs(
-                ("(", ")"),
-                ("[", "]"),
-                ("{", "}")
-            );
-
-            return this;
-        }
+        public DelimiterLexer UseDefaultDelimiters() =>
+            this
+                .UseDelimiters("+", "-", "*", "/")
+                .UseGroupingDelimiterPairs(
+                    ("(", ")"),
+                    ("[", "]")
+                );
 
         public override Token? Lex(TokenBuilder tokenBuilder)
         {

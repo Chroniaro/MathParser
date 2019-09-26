@@ -40,5 +40,14 @@ namespace MathParser.Lexer
         {
             return new RightGroupingToken(token, RightToLeftMap[token]);
         }
+
+        public void AddTo(DelimiterLexer lexer)
+        {
+            foreach (var leftToken in LeftToRightMap.Keys)
+                lexer.UseDelimiter(CreateLeft, leftToken);
+
+            foreach (var rightToken in RightToLeftMap.Keys)
+                lexer.UseDelimiter(CreateRight, rightToken);
+        }
     }
 }
