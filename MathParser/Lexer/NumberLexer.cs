@@ -25,7 +25,7 @@ namespace MathParser.Lexer
         {
             double value = LexDigits(builder, out int digits);
 
-            if (builder.MoveNext() && builder.Current == '.')
+            if (builder.TryMatchCurrent('.'))
             {
                 double valueAfterDecimal = LexDigits(builder, out int digitsAfterDecimal);
                 for (int i = 0; i < digitsAfterDecimal; ++i)
@@ -54,10 +54,7 @@ namespace MathParser.Lexer
                     ++numberOfDigits;
                 }
                 else
-                {
-                    builder.StepBack();
                     break;
-                }
             }
 
             return value;

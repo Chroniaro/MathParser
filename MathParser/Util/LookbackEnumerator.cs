@@ -11,6 +11,8 @@ namespace MathParser.Util
         protected int CurrentIndex { get; set; }
 
         public bool IsPastEnd => CurrentIndex >= LoadedValues.Count;
+        public bool IsBeforeBeginning => CurrentIndex < 0;
+        public bool HasCurrent => !(IsBeforeBeginning || IsPastEnd);
         public T Current => LoadedValues[CurrentIndex];
         object? IEnumerator.Current => Current;
 

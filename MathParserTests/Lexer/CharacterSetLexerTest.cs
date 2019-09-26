@@ -9,57 +9,58 @@ namespace MathParserTests.Lexer
     [TestClass]
     public class CharacterSetLexerTest
     {
-        private void TestLexing(string input, string firstWhitespace)
+        private MockCharacterSetLexer GetLexer(string chars) =>
+            new MockCharacterSetLexer()
+                .UseCharacters(chars);
+
+        private TokenBuilder GetTokenBuilder(string input) =>
+            new TokenBuilder(input.GetEnumerator());
+
+        private void TestLexing(string input, string chars, string firstToken)
         {
             //set up
-            var whitespaceLexer = new WhitespaceLexer()
-                .UseDefaultWhitespaceCharacters();
-            var tokenBuilder = new TokenBuilder(input.GetEnumerator());
+            var lexer = GetLexer(chars);
+            var tokenBuilder = GetTokenBuilder(input);
 
             //act
-            var token = whitespaceLexer.Lex(tokenBuilder);
+            var token = lexer.Lex(tokenBuilder);
 
             //test
-            Assert.IsTrue(token is WhitespaceToken);
-            Assert.AreEqual(token.Content, firstWhitespace);
+            Assert.AreEqual(firstToken, token.Content);
         }
 
         [TestMethod]
-        [DataRow(" ")]
-        [DataRow("\t")]
-        [DataRow("\n")]
-        public void Lex_WithSingleWhitespaceChar_ReturnsTokenOfTheWhitespaceChar(string whitespaceChar)
+        [DataRow("abc", "a")]
+        [DataRow("xyz", "y")]
+        public void Lex_WithSingleIncludedChar_ReturnsTokenOfTheChar(string chars, string singleChar)
         {
-            TestLexing(whitespaceChar, whitespaceChar);
+            TestLexing(singleChar, chars, singleChar);
         }
 
         [TestMethod]
-        [DataRow("  ")]
-        [DataRow("\t\n  \t")]
-        public void Lex_WithMultipleWhitespaceChars_GroupsWhitespaceIntoOneToken(string whitespaceChars)
+        [DataRow("xyz", "xxyzzzxy")]
+        public void Lex_WithMultipleIncludedChars_GroupsIntoOneToken(string chars, string multipleChars)
         {
-            TestLexing(whitespaceChars, whitespaceChars);
+            TestLexing(multipleChars, chars, multipleChars);
         }
 
         [TestMethod]
-        [DataRow(" \tfoo", " \t")]
-        [DataRow("\na", "\n")]
-        public void Lex_WithWhitespaceFollowedByNonWhitespace_ReturnsOneTokenWithWhitespace(string input, string firstWhitespace)
+        [DataRow("xyz", "xyyzxABC", "xyyzx")]
+        public void Lex_IncludedCharsThenNonIncludedChars_ReturnsOneTokenWithIncludedChars(string chars, string input, string expectedToken)
         {
-            TestLexing(input, firstWhitespace);
+            TestLexing(input, chars, expectedToken);
         }
 
         [TestMethod]
-        [DataRow("foo")]
-        public void Lex_WithNonWhitespace_ReturnsNull(string input)
+        [DataRow("xyz", "ABC")]
+        public void Lex_WithNonIncludedChar_ReturnsNull(string chars, string input)
         {
             //set up
-            var whitespaceLexer = new WhitespaceLexer()
-                .UseDefaultWhitespaceCharacters();
-            var tokenBuilder = new TokenBuilder(input.GetEnumerator());
+            var lexer = GetLexer(chars);
+            var tokenBuilder = GetTokenBuilder(input);
 
             //act
-            var token = whitespaceLexer.Lex(tokenBuilder);
+            var token = lexer.Lex(tokenBuilder);
 
             //test
             Assert.IsNull(token);

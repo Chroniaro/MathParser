@@ -13,10 +13,15 @@ namespace MathParser.Lexer
             IncludedCharacters = new HashSet<char>();
         }
 
-        protected CharacterSetLexer UseCharacters(params char[] chars)
+        protected CharacterSetLexer UseCharacters(IEnumerable<char> chars)
         {
             IncludedCharacters.UnionWith(chars);
             return this;
+        }
+
+        protected CharacterSetLexer UseCharacters(params char[] chars)
+        {
+            return UseCharacters((IEnumerable<char>)chars);
         }
 
         protected CharacterSetLexer UseCharactersInRange(char first, char last)

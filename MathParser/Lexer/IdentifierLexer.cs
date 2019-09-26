@@ -11,8 +11,11 @@ namespace MathParser.Lexer
         protected override Token ConstructToken(string chars) =>
             new IdentifierToken(chars);
 
-        public new IdentifierLexer UseCharacters(params char[] chars) =>
+        public new IdentifierLexer UseCharacters(IEnumerable<char> chars) =>
             (IdentifierLexer)base.UseCharacters(chars);
+
+        public new IdentifierLexer UseCharacters(params char[] chars) =>
+            UseCharacters((IEnumerable<char>)chars);
 
         public new IdentifierLexer UseCharactersInRange(char first, char last) =>
             (IdentifierLexer)base.UseCharactersInRange(first, last);

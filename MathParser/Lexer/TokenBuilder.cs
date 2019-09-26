@@ -22,6 +22,31 @@ namespace MathParser.Lexer
                 LoadedValues.Add(source.Current);
         }
 
+        public bool TryMatchCurrent(char c)
+        {
+            if (!HasCurrent)
+                return false;
+
+            return Current == c;
+        }
+
+        public bool TryMatchNext(char c)
+        {
+            if (MoveNext())
+                return Current == c;
+            else
+                return false;
+        }
+
+        public bool TryMatch(string token)
+        {
+            foreach (char c in token)
+                if (!TryMatchNext(c))
+                    return false;
+
+            return true;
+        }
+
         public string CollectPreceding()
         {
             var builder = new StringBuilder(CurrentIndex);
