@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MathParser.Lexer
 {
-    class WhitespaceLexer : CharacterSetLexer
+    public class WhitespaceLexer : CharacterSetLexer
     {
         public new ISet<char> IncludedCharacters => base.IncludedCharacters;
 
