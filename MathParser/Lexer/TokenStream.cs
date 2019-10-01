@@ -7,7 +7,7 @@ using System.Text;
 
 namespace MathParser.Lexer
 {
-    public class TokenStream : IEnumerator<Token>
+    internal class TokenStream : AbstractLookbackEnumerator<Token>, ITokenStream
     {
         private readonly TokenBuilder tokenBuilder;
         private readonly IEnumerable<ILexer> lexers;
@@ -18,50 +18,32 @@ namespace MathParser.Lexer
             this.lexers = lexers;
         }
 
-        #region Current
-        private Token? current = null;
-
-        public Token Current 
-        { 
-            get
-            {
-                if (current == null)
-                    throw new InvalidOperationException("Cannot access current before calling MoveNext");
-
-                return current!;
-            }
-        }
-
-        object IEnumerator.Current => Current;
-        #endregion
-
-        public bool MoveNext()
+        protected override void LoadMoreValues()
         {
             foreach (var lexer in lexers)
                 if (lexer.Lex(tokenBuilder) is Token token)
                 {
                     tokenBuilder.ForgetPreceding();
-                    current = token;
-                    return true;
+
+                    if (token is ISkippable)
+                        LoadMoreValues();
+                    else
+                    {
+                        LoadedValues.Add(token);
+                        return;
+                    }
                 }
                 else
                     tokenBuilder.Reset();
 
             if (tokenBuilder.MoveNext())
                 throw new InvalidDataException("Failed to create token at character " + tokenBuilder.Current);
-            else
-                return false;
-        }
-
-        public void Reset()
-        {
-            throw new InvalidOperationException();
         }
 
         #region IDisposable Support
         private bool disposedValue = false;
 
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
@@ -72,11 +54,6 @@ namespace MathParser.Lexer
 
                 disposedValue = true;
             }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
         }
         #endregion
     }

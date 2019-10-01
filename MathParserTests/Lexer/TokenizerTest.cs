@@ -1,4 +1,5 @@
 ﻿using MathParser.Lexer;
+using MathParserTests.Mocking;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -19,13 +20,13 @@ namespace MathParserTests.Lexer
         }
 
         [TestMethod]
-        public void Current_BeforeMoveNext_ThrowsInvalidOperation()
+        public void Current_BeforeMoveNext_ThrowsArgumentOutOfRangeException()
         {
             //set up
             using var tokenStream = GetTokenStream("");
             
             //test
-            Assert.ThrowsException<InvalidOperationException>(() => tokenStream.Current);
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => tokenStream.Current);
         }
 
         [TestMethod]
@@ -89,6 +90,21 @@ namespace MathParserTests.Lexer
 
             //test
             Assert.IsTrue(tokenStream.Current is MockToken{ Content: "foo" });
+        }
+
+        public void MoveNext_SkippableTokenMatches_SkipsToken()
+        {
+            //set up
+            var tokenStream = GetTokenStream("foobar",
+                new MockSkippableTokenLexer() { Token = "foo" },
+                new MockTokenLexer() { Token = "bar" }
+            );
+
+            //act
+            tokenStream.MoveNext();
+
+            //test
+            Assert.IsTrue(tokenStream.Current is MockToken { Content: "bar" });
         }
     }
 }

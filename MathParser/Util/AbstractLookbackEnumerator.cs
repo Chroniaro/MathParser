@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MathParser.Util
 {
-    public abstract class LookbackEnumerator<T> : IEnumerator<T>
+    public abstract class AbstractLookbackEnumerator<T> : ILookbackEnumerator<T>
     {
         protected List<T> LoadedValues { get; }
         protected int CurrentIndex { get; set; }
@@ -16,13 +16,13 @@ namespace MathParser.Util
         public T Current => LoadedValues[CurrentIndex];
         object? IEnumerator.Current => Current;
 
-        public LookbackEnumerator(int initialCapacity)
+        public AbstractLookbackEnumerator(int initialCapacity)
         {
             LoadedValues = new List<T>(initialCapacity);
             CurrentIndex = -1;
         }
 
-        public LookbackEnumerator() :
+        public AbstractLookbackEnumerator() :
             this(10)
         { }
 

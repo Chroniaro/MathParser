@@ -1,12 +1,15 @@
-﻿using System;
+﻿using MathParser.LanguageModel;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MathParser.Lexer
 {
-    public class NumberToken : Token
+    public class NumberToken : Token, IEvaluatable
     {
         public double Value { get; }
+
+        public Expression GetValue() =>  new Number(Value);
 
         public NumberToken(double value) : base(value.ToString())
         {

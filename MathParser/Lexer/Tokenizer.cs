@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathParser.Util;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -57,7 +58,7 @@ namespace MathParser.Lexer
                     .UseDefaultIdentifierCharacters()
             );
 
-        public IEnumerator<Token> GetEnumerator()
+        public ITokenStream GetTokenStream()
         {
             if (Source == null)
                 throw new InvalidOperationException("Source must be set before a Tokenizer can be enumerated.");
@@ -65,9 +66,10 @@ namespace MathParser.Lexer
             return new TokenStream(Source, Lexers);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        public IEnumerator<Token> GetEnumerator() =>
+            GetTokenStream();
+
+        IEnumerator IEnumerable.GetEnumerator() =>
+            GetTokenStream();
     }
 }

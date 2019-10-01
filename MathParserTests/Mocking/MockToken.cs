@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MathParserTests.Lexer
+namespace MathParserTests.Mocking
 {
     internal class MockToken : Token
     {

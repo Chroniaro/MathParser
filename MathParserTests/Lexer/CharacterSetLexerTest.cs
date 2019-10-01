@@ -1,4 +1,5 @@
 ﻿using MathParser.Lexer;
+using MathParserTests.Mocking;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -64,6 +65,24 @@ namespace MathParserTests.Lexer
 
             //test
             Assert.IsNull(token);
+        }
+    }
+
+    class MockCharacterSetLexer : CharacterSetLexer
+    {
+        public string Name { get; set; } = "MockCharacterSetLexer";
+
+        protected override Token ConstructToken(string chars)
+        {
+            return new MockToken(Name, chars);
+        }
+
+        public new MockCharacterSetLexer UseCharacters(IEnumerable<char> chars) =>
+            (MockCharacterSetLexer)base.UseCharacters(chars);
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }
