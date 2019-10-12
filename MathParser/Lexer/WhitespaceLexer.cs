@@ -21,6 +21,6 @@ namespace MathParser.Lexer
             (WhitespaceLexer)base.UseCharactersInRange(first, last);
 
         public WhitespaceLexer UseDefaultWhitespaceCharacters() =>
-            (WhitespaceLexer) UseCharacters(' ', '\t', '\n');
+            (WhitespaceLexer) UseCharacters(' ', '\t', '\n', '\r');
     }
 }

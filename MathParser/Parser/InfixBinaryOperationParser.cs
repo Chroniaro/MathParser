@@ -7,7 +7,7 @@ using MathParser.Util;
 
 namespace MathParser.Parser
 {
-    public abstract class InfixBinaryOperationParser : IParser
+    public abstract class InfixBinaryOperationParser : IInfixParser
     {
         public abstract string OperatorDelimiter { get; }
 
@@ -50,9 +50,11 @@ namespace MathParser.Parser
             if (!TryParseTerm(tokens, out var left))
                 return null;
 
-            if (MatchesOperation(tokens))
+            while (MatchesOperation(tokens))
                 if (TryParseTerm(tokens, out var right))
-                    return CreateOperationExpression(left!, right!);
+                    left = CreateOperationExpression(left!, right!);
+                else
+                    break;
 
             return left;
         }

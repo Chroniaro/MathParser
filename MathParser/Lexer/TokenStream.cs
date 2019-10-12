@@ -26,7 +26,10 @@ namespace MathParser.Lexer
                     tokenBuilder.ForgetPreceding();
 
                     if (token is ISkippable)
+                    {
                         LoadMoreValues();
+                        return;
+                    }
                     else
                     {
                         LoadedValues.Add(token);
